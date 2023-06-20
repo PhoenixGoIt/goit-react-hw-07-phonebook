@@ -1,6 +1,9 @@
+import { deleteContact, fetchContacts } from "components/redux/operations";
+import { selectContacts, selectError, selectFilter, selectIsLoading, selectvisibleContacts  } from "components/redux/selectors";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { deleteContact } from '../redux/contactsSlises'
+
 
 
 // const getVisibleTasks = (contacts, filter) => {
@@ -9,22 +12,27 @@ import { deleteContact } from '../redux/contactsSlises'
 //     contact.text['name'].toLowerCase().includes(normilizedFilter)
 //   );
 // };
-
+ //const filter = useSelector(state  => state.filter.filter)
 export const ContactList = () => {
-  const contacts = useSelector(state  => state.contacts.contacts)
-  const filter = useSelector(state  => state.filter.filter)
+  
+  const contacts = useSelector(selectContacts);
+  const filter = useSelector(selectFilter)
+  const isLoading = useSelector(selectIsLoading);
+  const error = useSelector(selectError);
   const dispatch = useDispatch()
-  console.log(filter)
-  const filteredContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter)
-  );
+
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
+
     return(
         <ul >
-      {filteredContacts.length ? (
-        filteredContacts.map(({ id, name, number }) => (
+      {contacts.length ? (
+        contacts.map(({id, name, phone}) => (
           <li  key={id}>
             <span >{name}: </span>
-            <span >{number}</span>
+            <span >{phone}</span>
             <button
               type="button"
               onClick={() => dispatch(deleteContact(id))}
