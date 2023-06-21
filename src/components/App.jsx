@@ -7,11 +7,15 @@ import { FilterСontacts } from './FilterСontacts/FilterСontacts';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addContact } from './redux/operations';
+import { useSelector } from "react-redux";
+import { selectContacts } from "components/redux/selectors";
 
 export function App() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const dispatch = useDispatch()
+  const contacts = useSelector(selectContacts);
+  const dispatch = useDispatch();
+
   const handleChangeName = (e) => {
     setName(e);
   };
@@ -20,19 +24,37 @@ export function App() {
     setPhone(e);
   };
 
+  const twinCheck = (name, phone, newContact) => {
+    let isTwin = contacts.find(prevContact => {
+      if (prevContact.name.toLocaleLowerCase() === name.toLocaleLowerCase()) {
+        alert(`${name}: Already in contact!`)
+        return true
+      }
+      else if(prevContact.phone.toLocaleLowerCase() === phone) {
+        alert(`${phone}: Already in contact!`)
+        return true
+      }
+    });
+    if (!isTwin) {
+      dispatch(addContact(newContact));
+    }
+
+  };
+
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     const newContact = {
       name,
       phone,
     };
-    dispatch(addContact(newContact))
-  }
+    twinCheck(name, phone, newContact);
+  };
+
   return (
     <div>
       <h1>Phonebook</h1>
       <form onSubmit={handleSubmit}>
-        <InFormName  title="Name" />
+        <InFormName title="Name" />
         <NameInput onChange={handleChangeName}/>
         <InFormName title="Number" />
         <NumberInput onChange={handleChangeNumber}/>
@@ -44,21 +66,3 @@ export function App() {
     </div>
   );
 }
-
-
-// e.preventDefault();
-//     setName('');
-//     setNumber('');
-//     const newContact = {
-//       id: nanoid(),
-//       name,
-//       number,
-//     };
-//     if (contacts.filter((contact) => contact.name.toLowerCase().trim() === newContact.name.toLowerCase().trim()).length) {
-//       alert(`${newContact.name} is already in contacts`);
-//       return;
-//     }
-//     else if(contacts.filter((contact) => contact.number.trim() === newContact.number.trim()).length) {
-//       alert(`${newContact.number} is already in contacts`);
-//       return;
-//     }
