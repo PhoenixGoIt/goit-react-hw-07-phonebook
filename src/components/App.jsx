@@ -25,24 +25,35 @@ export function App() {
   };
 
   const twinCheck = (name, phone, newContact) => {
-    let isTwin = contacts.find(prevContact => {
-      if (prevContact.name.toLocaleLowerCase() === name.toLocaleLowerCase()) {
-        alert(`${name}: Already in contact!`)
-        return true
+    let isTwin = false;
+  
+    const foundContact = contacts.find(prevContact => {
+      if (prevContact.name.toLowerCase() === name.toLowerCase()) {
+        isTwin = true;
+        return true;
+      } else if (prevContact.phone.toLowerCase() === phone.toLowerCase()) {
+        isTwin = true;
+        return true;
       }
-      else if(prevContact.phone.toLocaleLowerCase() === phone) {
-        alert(`${phone}: Already in contact!`)
-        return true
-      }
+      return false;
     });
-    if (!isTwin) {
+  
+    if (isTwin) {
+      if (foundContact.name.toLowerCase() === name.toLowerCase()) {
+        alert(`${name}: Already in contact!`);
+      } else if (foundContact.phone.toLowerCase() === phone.toLowerCase()) {
+        alert(`${phone}: Already in contact!`);
+      }
+    } else {
       dispatch(addContact(newContact));
     }
-
   };
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setName('')
+    setPhone('')
     const newContact = {
       name,
       phone,
@@ -55,9 +66,9 @@ export function App() {
       <h1>Phonebook</h1>
       <form onSubmit={handleSubmit}>
         <InFormName title="Name" />
-        <NameInput onChange={handleChangeName}/>
+        <NameInput onChange={handleChangeName} value={name}/>
         <InFormName title="Number" />
-        <NumberInput onChange={handleChangeNumber}/>
+        <NumberInput onChange={handleChangeNumber} value={phone}/>
         <AddBtn />
       </form>
       <h2>Contacts</h2>
